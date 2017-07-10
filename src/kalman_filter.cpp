@@ -3,6 +3,8 @@
 using Eigen::MatrixXd;
 using Eigen::VectorXd;
 
+#define PI 3.14159265358979323846
+
 KalmanFilter::KalmanFilter() {}
 
 KalmanFilter::~KalmanFilter() {}
@@ -59,6 +61,14 @@ void KalmanFilter::UpdateEKF(const VectorXd &z) {
   
   float rho = sqrt(x_pos*x_pos+y_pos*y_pos);
   float theta = atan2(y_pos,x_pos);
+  while(theta > PI)
+  {
+      theta -= 2*PI;
+  }
+  while(theta < PI)
+  {
+      theta += 2*PI;
+  }
   float ro_dot = (x_pos*vx+y_pos*vy)/rho;
   VectorXd z_pred = VectorXd(3);
   z_pred << rho, theta, ro_dot;
