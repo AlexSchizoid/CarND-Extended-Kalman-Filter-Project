@@ -111,11 +111,6 @@ void FusionEKF::ProcessMeasurement(const MeasurementPackage &measurement_pack) {
       vx = 0;
       vy = 0;
     }
-    if ((fabs(x) < 0.0001) && (fabs(y) < 0.0001))
-    {
-      x = 0.0001;
-      y = 0.0001;
-    }
     ekf_.x_ << x, y, vx, vy;
     
     previous_timestamp_ = measurement_pack.timestamp_;
@@ -135,9 +130,10 @@ void FusionEKF::ProcessMeasurement(const MeasurementPackage &measurement_pack) {
      * Use noise_ax = 9 and noise_ay = 9 for your Q matrix.
    */
    	//compute the time elapsed between the current and previous measurements
-  previous_timestamp_ = measurement_pack.timestamp_;
 
   float dt = (measurement_pack.timestamp_ - previous_timestamp_) / 1000000.0;	//dt - expressed in seconds
+  previous_timestamp_ = measurement_pack.timestamp_;
+
   float dt_2 = dt * dt;
   float dt_3 = dt_2 * dt;
   float dt_4 = dt_3 * dt;
