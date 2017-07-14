@@ -7,6 +7,9 @@
 
 using namespace std;
 
+#define USE_RADAR 1
+#define USE_LIDAR 1
+
 // for convenience
 using json = nlohmann::json;
 
@@ -66,6 +69,9 @@ int main()
     	  string sensor_type;
     	  iss >> sensor_type;
 
+	  bool processMeasurement = false;
+	  processMeasurement = ((sensor_type.compare("L") == 0 && USE_LIDAR) || (sensor_type.compare("R") == 0 && USE_RADAR));
+
     	  if (sensor_type.compare("L") == 0) {
       	  		meas_package.sensor_type_ = MeasurementPackage::LASER;
           		meas_package.raw_measurements_ = VectorXd(2);
@@ -103,10 +109,12 @@ int main()
     	  gt_values(1) = y_gt; 
     	  gt_values(2) = vx_gt;
     	  gt_values(3) = vy_gt;
-    	  ground_truth.push_back(gt_values);
-          
-          //Call ProcessMeasurment(meas_package) for Kalman filter
-    	  fusionEKF.ProcessMeasurement(meas_package);    	  
+          if(processMeasurement)
+	  {
+    	    ground_truth.push_back(gt_values);
+            //Call ProcessMeasurment(meas_package) for Kalman filter
+    	    fusionEKF.ProcessMeasurement(meas_package);    	  
+          }
 
     	  //Push the current estimated x,y positon from the Kalman filter's state vector
 
@@ -122,7 +130,10 @@ int main()
     	  estimate(2) = v1;
     	  estimate(3) = v2;
     	  
-    	  estimations.push_back(estimate);
+	  if(processMeasurement)
+	  {
+    	    estimations.push_back(estimate);
+	  }
 
     	  VectorXd RMSE = tools.CalculateRMSE(estimations, ground_truth);
 
