@@ -63,7 +63,9 @@ public:
    * @param z The measurement at k+1
    */
   void UpdateEKF(const Eigen::VectorXd &z);
-
+  private:
+  float normalizeAngle(float theta);
+  void commonKF(const Eigen::VectorXd &z, const Eigen::VectorXd &y);
 };
 
 #endif /* KALMAN_FILTER_H_ */
